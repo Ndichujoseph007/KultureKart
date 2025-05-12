@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "582671022285",
+    "project_id": "kulturekart-50936",
+    "storage_bucket": "kulturekart-50936.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:582671022285:android:ccd0333f36239c8e251184",
+        "android_client_info": {
+          "package_name": "com.ndichu.kulturekart"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA73FjVEeW5JXSSugo3zpiVATBEzUBIGVg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
