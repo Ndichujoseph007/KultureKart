@@ -1,13 +1,10 @@
 import org.gradle.kotlin.dsl.implementation
 
 plugins {
-//    alias(libs.plugins.android.application)
+    alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.google.gms.google.services)
-    id("com.android.application")
-    id("com.google.dagger.hilt.android")
-
 
 
 
@@ -93,9 +90,40 @@ dependencies {
     //firebase
     implementation("com.google.firebase:firebase-auth:22.3.0")
     implementation("com.google.firebase:firebase-database:20.3.0")
+    implementation ("com.google.firebase:firebase-storage-ktx:20.3.0")
 
     implementation("androidx.compose.material3:material3:1.3.0-beta01") // Or the latest version
 
-    implementation("androidx.datastore:datastore-preferences:1.0.0") // Or the latest
+    implementation("androidx.datastore:datastore-preferences:1.0.0")
+
+    // Or the latest
+    //Room Dependencies
+    implementation ("androidx.room:room-runtime:2.5.2")
+    kapt ("androidx.room:room-compiler:2.5.2")
+    implementation ("androidx.room:room-ktx:2.5.2")
+
+    implementation ("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.2")
+    implementation ("androidx.lifecycle:lifecycle-livedata-ktx:2.7.0")
+    implementation ("androidx.lifecycle:lifecycle-runtime-ktx:2.6.2")
+
+    implementation ("androidx.room:room-runtime:2.6.1")
+    kapt ("androidx.room:room-compiler:2.6.1")
+    implementation ("androidx.room:room-ktx:2.6.1")
+
+
+    implementation ("androidx.navigation:navigation-compose:2.7.4")
+    implementation ("androidx.compose.ui:ui:1.5.1")
+    implementation ("androidx.activity:activity-compose:1.7.2")
+
+
+    //image upload
+    implementation ("io.coil-kt:coil-compose:2.4.0")
+    // Image loading
+    implementation("io.coil-kt:coil-compose:2.2.2")
+
+// Accompanist Pager (image slider)
+    implementation("com.google.accompanist:accompanist-pager:0.31.5-beta")
+    implementation("com.google.accompanist:accompanist-pager-indicators:0.31.5-beta")
+
 
 }

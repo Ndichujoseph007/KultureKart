@@ -6,20 +6,14 @@ plugins {
     alias(libs.plugins.google.gms.google.services) apply false
 
 }
-//buildscript {
-//    dependencies {
-//        // ...
-//        classpath("com.google.dagger:hilt-android-gradle-plugin:2.48")
-//    // Use the latest version
-//    }
-//}
 buildscript {
     repositories {
-        // other repositories...
+        dependencies {
+            classpath ("com.google.gms:google-services:4.3.15")
+        }
+
         mavenCentral()
     }
-    dependencies {
-        // other plugins...
-        classpath( "com.google.dagger:hilt-android-gradle-plugin:2.56.2")
-    }
+
 }
+

@@ -1,5 +1,6 @@
 package com.ndichu.kulturekart.ui.screens.auth
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -27,6 +28,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -34,12 +37,16 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import com.ndichu.kulturekart.R
 import com.ndichu.kulturekart.data.AuthViewModel
 import com.ndichu.kulturekart.navigation.ROUTE_ABOUT
+import com.ndichu.kulturekart.navigation.ROUTE_ADD_PRODUCT
+import com.ndichu.kulturekart.navigation.ROUTE_BUYER
 import com.ndichu.kulturekart.navigation.ROUTE_BUYER_HOME
+import com.ndichu.kulturekart.navigation.ROUTE_DASHBOARD
 import com.ndichu.kulturekart.navigation.ROUTE_REGISTER
 import com.ndichu.kulturekart.navigation.ROUTE_SELLER_HOME
-
+import com.ndichu.kulturekart.ui.components.SectionCard
 
 
 @Composable
@@ -53,20 +60,27 @@ fun LoginScreen(navController: NavHostController) {
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
+        Image(
+            painter = painterResource(id = R.drawable.background), // or use rememberAsyncImagePainter for URL
+            contentDescription = null,
+            modifier = Modifier.fillMaxSize(),
+            contentScale = ContentScale.Crop // Fit, FillBounds, Crop etc.
+        )
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
                 .padding(16.dp)
                 .fillMaxWidth()
         ) {
-            Text(
-                text = "Welcome Back!",
-                style = MaterialTheme.typography.headlineMedium.copy(
-                    fontFamily = FontFamily.Cursive,
-                    fontWeight = FontWeight.Bold
-                ),
-                color = MaterialTheme.colorScheme.primary
-            )
+//            Text(
+//                text = "Welcome Back!",
+//                style = MaterialTheme.typography.headlineMedium.copy(
+//                    fontFamily = FontFamily.Cursive,
+//                    fontWeight = FontWeight.Bold
+//                ),
+//                color = MaterialTheme.colorScheme.primary
+//            )
+            SectionCard(title = "Welcome Back!", MaterialTheme.colorScheme.primary) {
 
             OutlinedTextField(
                 value = email,
@@ -111,7 +125,8 @@ fun LoginScreen(navController: NavHostController) {
                 onClick = {
                     viewModel.login(email, password) { user, msg ->
                         if (user != null) {
-                            val route = if (user.role == "buyer") ROUTE_ABOUT else ROUTE_ABOUT
+                            val route =
+                                if (user.role == "buyer") ROUTE_DASHBOARD else ROUTE_ADD_PRODUCT
                             navController.navigate(route)
                         } else error = msg
                     }
@@ -121,6 +136,7 @@ fun LoginScreen(navController: NavHostController) {
             ) {
                 Text("Login")
             }
+
 
             if (error.isNotEmpty()) {
                 Spacer(modifier = Modifier.height(8.dp))
@@ -137,5 +153,5 @@ fun LoginScreen(navController: NavHostController) {
             }
         }
     }
-}
+}}
 
