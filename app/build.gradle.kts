@@ -64,6 +64,8 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation(libs.firebase.auth)
     implementation(libs.firebase.database)
+    implementation(libs.firebase.firestore)
+    implementation(libs.firebase.storage)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -92,6 +94,7 @@ dependencies {
     implementation("com.google.firebase:firebase-database:20.3.0")
     implementation ("com.google.firebase:firebase-storage-ktx:20.3.0")
 
+
     implementation("androidx.compose.material3:material3:1.3.0-beta01") // Or the latest version
 
     implementation("androidx.datastore:datastore-preferences:1.0.0")
@@ -117,13 +120,21 @@ dependencies {
 
 
     //image upload
-    implementation ("io.coil-kt:coil-compose:2.4.0")
+
     // Image loading
     implementation("io.coil-kt:coil-compose:2.2.2")
 
 // Accompanist Pager (image slider)
     implementation("com.google.accompanist:accompanist-pager:0.31.5-beta")
     implementation("com.google.accompanist:accompanist-pager-indicators:0.31.5-beta")
+    //storage
+    implementation("com.google.firebase:firebase-storage-ktx")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.6.4")
+
+    ////imager
+    implementation ("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
+    implementation ("com.squareup.okhttp3:logging-interceptor:4.9.1")
 
 
 }

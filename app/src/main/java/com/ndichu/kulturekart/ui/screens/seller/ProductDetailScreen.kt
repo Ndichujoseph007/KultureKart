@@ -41,6 +41,7 @@ import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import coil.compose.rememberAsyncImagePainter
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import com.ndichu.kulturekart.data.ProductViewModel
 import com.ndichu.kulturekart.ui.components.BottomNavigationBar
@@ -51,25 +52,33 @@ fun ProductDetailScreen(
     navController: NavController,
     viewModel: ProductViewModel = viewModel()
 ) {
-    // Pull the current product from the list
-    val productList by viewModel.productList.collectAsState()
-    val product = productList.find { it.id == productId }
+    // Collect the products from the ViewModel.
+    val products by viewModel.products.collectAsState()
+    val context = LocalContext.current
+
+    // Find the product by ID.  Use derivedStateOf to ensure this is only recalculated when products changes.
+    val product by remember {
+        derivedStateOf {
+            products.find { it.id == productId }
+        }
+    }
 
     // Local states for editing
     var name by remember { mutableStateOf(product?.name.orEmpty()) }
-    var price by remember { mutableStateOf(product?.price.toString()) }
+    var price by remember { mutableStateOf(product?.price?.toString().orEmpty()) } //handle null
     var region by remember { mutableStateOf(product?.region.orEmpty()) }
     var description by remember { mutableStateOf(product?.description.orEmpty()) }
     var imageUri by remember { mutableStateOf<Uri?>(null) }
-    val context = LocalContext.current
+
 
     // Launcher for picking a new image
     val launcher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) {
         imageUri = it
     }
 
-    val isLoading by viewModel.isLoading
-    val error = viewModel.uploadError.value
+    val isLoading by viewModel.isLoading.collectAsState()
+    val error by viewModel.uploadError.collectAsState()
+
 
     if (product == null) {
         // Product not found
@@ -132,18 +141,9 @@ fun ProductDetailScreen(
             Text("Product Image", style = MaterialTheme.typography.bodyMedium)
             Spacer(Modifier.height(8.dp))
             Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
-                if (imageUri != null) {
+                imageUri?.let {
                     Image(
-                        painter = rememberAsyncImagePainter(imageUri),
-                        contentDescription = null,
-                        modifier = Modifier
-                            .size(200.dp)
-                            .clip(RoundedCornerShape(12.dp)),
-                        contentScale = ContentScale.Crop
-                    )
-                } else {
-                    AsyncImage(
-                        model = product.imageUrl,
+                        painter = rememberAsyncImagePainter(it),
                         contentDescription = null,
                         modifier = Modifier
                             .size(200.dp)
@@ -166,17 +166,17 @@ fun ProductDetailScreen(
                 // Save / Update
                 Button(
                     onClick = {
-                        val updated = product.copy(
+                        // Ensure price is not null
+                        val safePrice = price.toDoubleOrNull() ?: 0.0
+                        viewModel.updateproducts(
+                            context = context,
+                            navController = navController,
                             name = name,
-                            price = price.toDoubleOrNull() ?: product.price,
                             region = region,
-                            description = description
-                        )
-                        viewModel.updateProduct(updated) {
-                            Toast.makeText(context, "Product updated", Toast.LENGTH_SHORT).show()
-                            navController.popBackStack()
-                        }
-                    },
+                            price = safePrice.toString(),
+                            description = description,
+                            productId = product!!.id,
+                        )},
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Text("Save Changes")
@@ -187,10 +187,8 @@ fun ProductDetailScreen(
                 // Delete
                 OutlinedButton(
                     onClick = {
-                        viewModel.deleteProduct(product.id) {
-                            Toast.makeText(context, "Product deleted", Toast.LENGTH_SHORT).show()
-                            navController.popBackStack()
-                        }
+                        viewModel.deleteProduct(context = context, productId = product!!.id, navController = navController)
+
                     },
                     modifier = Modifier.fillMaxWidth(),
                     colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.error)
@@ -206,3 +204,4 @@ fun ProductDetailScreen(
         }
     }
 }
+

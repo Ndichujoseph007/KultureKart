@@ -19,64 +19,153 @@ import com.ndichu.kulturekart.navigation.ROUTE_SPLASH
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.TextButton
 import com.ndichu.kulturekart.navigation.ROUTE_ABOUT
+import com.ndichu.kulturekart.navigation.ROUTE_DASHBOARD
+
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 
 
 @Composable
 fun ProfileScreen(navController: NavHostController) {
     val viewModel: AuthViewModel = viewModel()
     val user by viewModel.currentUser.collectAsState()
-
     var selectedRole by remember { mutableStateOf(user?.role ?: "buyer") }
 
-    Column(Modifier.padding(16.dp)) {
-        Text("Email: ${user?.email ?: "Unknown"}")
-        Text("Current Role: ${user?.role ?: "Unknown"}")
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(24.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        // Back Button top-left aligned
+        Box(modifier = Modifier.fillMaxWidth()) {
+            IconButton(
+                onClick = { navController.popBackStack() },
+                modifier = Modifier.align(Alignment.CenterStart)
+            ) {
+                Icon(Icons.Filled.ArrowBack, contentDescription = "Back")
+            }
+        }
 
-        Spacer(Modifier.height(16.dp))
-        Text("Switch Role:")
+        Spacer(Modifier.height(24.dp))
+
+        Text(
+            text = "Profile",
+            style = MaterialTheme.typography.headlineMedium,
+            color = MaterialTheme.colorScheme.primary
+        )
+
+        Spacer(Modifier.height(32.dp))
+
+        // Email and current role info
+        Text(
+            text = "Email: ${user?.email ?: "Unknown"}",
+            style = MaterialTheme.typography.bodyLarge
+        )
+        Spacer(Modifier.height(8.dp))
+        Text(
+            text = "Current Role: ${user?.role ?: "N/A"}",
+            style = MaterialTheme.typography.bodyLarge
+        )
+
+        Spacer(Modifier.height(32.dp))
+
+        Text(
+            text = "Switch Role",
+            style = MaterialTheme.typography.titleMedium,
+            color = MaterialTheme.colorScheme.secondary
+        )
+
+        Spacer(Modifier.height(12.dp))
 
         Row(verticalAlignment = Alignment.CenterVertically) {
             RadioButton(
                 selected = selectedRole == "buyer",
-                onClick = { selectedRole = "buyer" }
+                onClick = { selectedRole = "buyer" },
+                colors = androidx.compose.material3.RadioButtonDefaults.colors(
+                    selectedColor = MaterialTheme.colorScheme.primary
+                )
             )
-            Text("Buyer")
+            Spacer(Modifier.width(4.dp))
+            Text(
+                text = "Buyer",
+                style = MaterialTheme.typography.bodyLarge
+            )
 
-            Spacer(Modifier.width(16.dp))
+            Spacer(Modifier.width(24.dp))
 
             RadioButton(
                 selected = selectedRole == "seller",
-                onClick = { selectedRole = "seller" }
+                onClick = { selectedRole = "seller" },
+                colors = androidx.compose.material3.RadioButtonDefaults.colors(
+                    selectedColor = MaterialTheme.colorScheme.primary
+                )
             )
-            Text("Seller")
+            Spacer(Modifier.width(4.dp))
+            Text(
+                text = "Seller",
+                style = MaterialTheme.typography.bodyLarge
+            )
         }
 
-        Spacer(Modifier.height(16.dp))
+        Spacer(Modifier.height(32.dp))
 
-        Button(onClick = {
-            viewModel.switchRole(selectedRole) { success ->
-                if (success) {
-                    val route = if (selectedRole == "buyer") ROUTE_BUYER_HOME else ROUTE_SELLER_HOME
-                    navController.navigate(route) { popUpTo(0) }
+        Button(
+            onClick = {
+                viewModel.switchRole(selectedRole) { success ->
+                    if (success) {
+                        val route = if (selectedRole == "buyer") ROUTE_DASHBOARD else ROUTE_SELLER_HOME
+                        navController.navigate(route) {
+                            popUpTo(0) // Clear back stack
+                        }
+                    }
                 }
-            }
-        }) {
-            Text("Switch Role")
+            },
+            modifier = Modifier.fillMaxWidth(),
+            shape = MaterialTheme.shapes.medium
+        ) {
+            Text(
+                text = "Switch Role",
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.onPrimary
+            )
         }
 
-        Spacer(Modifier.height(16.dp))
-        TextButton(onClick = {
-            viewModel.logout()
-            navController.navigate(ROUTE_ABOUT) { popUpTo(0) }
-        }) {
-            Text("About Us")
+        Spacer(Modifier.height(24.dp))
+
+        TextButton(
+            onClick = {
+                navController.navigate(ROUTE_ABOUT)
+            },
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text(
+                text = "About Us",
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.primary
+            )
         }
 
-        TextButton(onClick = {
-            viewModel.logout()
-            navController.navigate(ROUTE_SPLASH) { popUpTo(0) }
-        }) {
-            Text("Logout")
+        Spacer(Modifier.height(8.dp))
+
+        TextButton(
+            onClick = {
+                viewModel.logout()
+                navController.navigate(ROUTE_SPLASH) {
+                    popUpTo(0)
+                }
+            },
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text(
+                text = "Logout",
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.error
+            )
         }
     }
 }
+

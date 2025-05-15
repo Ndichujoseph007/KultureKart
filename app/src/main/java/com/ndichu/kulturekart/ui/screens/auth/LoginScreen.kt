@@ -72,14 +72,6 @@ fun LoginScreen(navController: NavHostController) {
                 .padding(16.dp)
                 .fillMaxWidth()
         ) {
-//            Text(
-//                text = "Welcome Back!",
-//                style = MaterialTheme.typography.headlineMedium.copy(
-//                    fontFamily = FontFamily.Cursive,
-//                    fontWeight = FontWeight.Bold
-//                ),
-//                color = MaterialTheme.colorScheme.primary
-//            )
             SectionCard(title = "Welcome Back!", MaterialTheme.colorScheme.primary) {
 
             OutlinedTextField(
@@ -126,7 +118,7 @@ fun LoginScreen(navController: NavHostController) {
                     viewModel.login(email, password) { user, msg ->
                         if (user != null) {
                             val route =
-                                if (user.role == "buyer") ROUTE_DASHBOARD else ROUTE_ADD_PRODUCT
+                                if (user.role == "buyer") ROUTE_DASHBOARD else ROUTE_SELLER_HOME
                             navController.navigate(route)
                         } else error = msg
                     }

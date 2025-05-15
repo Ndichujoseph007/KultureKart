@@ -1,6 +1,7 @@
 package com.ndichu.kulturekart.navigation
 
 
+import DashboardScreen
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
@@ -8,15 +9,17 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.ndichu.kulturekart.data.ProductViewModel
 import com.ndichu.kulturekart.ui.components.ScaffoldWithBottomBar
 import com.ndichu.kulturekart.ui.screens.auth.LoginScreen
 import com.ndichu.kulturekart.ui.screens.auth.RegisterScreen
-import com.ndichu.kulturekart.ui.screens.buyer.DashboardScreen
-import com.ndichu.kulturekart.ui.screens.splash.SplashScreen
 import com.ndichu.kulturekart.ui.screens.profile.AboutScreen
 import com.ndichu.kulturekart.ui.screens.profile.ProfileScreen
+import com.ndichu.kulturekart.ui.screens.seller.AddProductScreen
 import com.ndichu.kulturekart.ui.screens.seller.ProductDetailScreen
 import com.ndichu.kulturekart.ui.screens.seller.ProductListScreen
+import com.ndichu.kulturekart.ui.screens.seller.SellerHomeScreen
+import com.ndichu.kulturekart.ui.screens.splash.SplashScreen
 
 
 @Composable
@@ -54,6 +57,22 @@ fun AppNavHost(
                 DashboardScreen( navController = navController)
             }
         }
+        composable(ROUTE_SELLER_HOME) {
+            SellerHomeScreen(
+                navController = navController,
+//                onAddProductClick = {
+//                    navController.navigate(ROUTE_ADD_PRODUCT)
+//                },
+//                onProfileClick = {
+//                    navController.navigate(ROUTE_PROFILE)
+//                }
+            )
+        }
+        composable(ROUTE_ADD_PRODUCT) {
+            ScaffoldWithBottomBar(navController = navController) { padding ->
+                AddProductScreen( navController = navController)
+            }
+        }
 
         composable(
             route = ROUTE_PRODUCT_DETAIL_WITH_ARG,
@@ -66,7 +85,7 @@ fun AppNavHost(
         }
         composable(ROUTE_PRODUCT_LIST) {
             ScaffoldWithBottomBar(navController = navController) { padding ->
-                ProductListScreen(modifier = padding,navController)
+                ProductListScreen(navController,ProductViewModel())
             }
         }
     }
