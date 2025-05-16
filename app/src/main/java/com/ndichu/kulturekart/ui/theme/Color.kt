@@ -21,7 +21,7 @@ val SuccessGreen = Color(0xFF4CAF50)
 val GoldLight1 = Color(0xFFFFD700)
 val GoldDark1 = Color(0xFFB8860B)
 val BackgroundDark = Color(0xFF121212)
-val BackgroundLight = Color(0xFFFFFFFF)
+val BackgroundLight = Color(0xFF8BC34A)
 
 
 

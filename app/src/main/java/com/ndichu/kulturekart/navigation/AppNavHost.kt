@@ -1,9 +1,8 @@
 package com.ndichu.kulturekart.navigation
 
-
-import DashboardScreen
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.ViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -13,12 +12,16 @@ import com.ndichu.kulturekart.data.ProductViewModel
 import com.ndichu.kulturekart.ui.components.ScaffoldWithBottomBar
 import com.ndichu.kulturekart.ui.screens.auth.LoginScreen
 import com.ndichu.kulturekart.ui.screens.auth.RegisterScreen
+import com.ndichu.kulturekart.ui.screens.buyer.BuyerProductDetailScreen
+import com.ndichu.kulturekart.ui.screens.buyer.CartScreen
+import com.ndichu.kulturekart.ui.screens.buyer.DashboardScreen
 import com.ndichu.kulturekart.ui.screens.profile.AboutScreen
 import com.ndichu.kulturekart.ui.screens.profile.ProfileScreen
 import com.ndichu.kulturekart.ui.screens.seller.AddProductScreen
-import com.ndichu.kulturekart.ui.screens.seller.ProductDetailScreen
+import com.ndichu.kulturekart.ui.screens.seller.EditProductScreen
 import com.ndichu.kulturekart.ui.screens.seller.ProductListScreen
 import com.ndichu.kulturekart.ui.screens.seller.SellerHomeScreen
+import com.ndichu.kulturekart.ui.screens.seller.SellerProductDetailScreen
 import com.ndichu.kulturekart.ui.screens.splash.SplashScreen
 
 
@@ -60,18 +63,20 @@ fun AppNavHost(
         composable(ROUTE_SELLER_HOME) {
             SellerHomeScreen(
                 navController = navController,
-//                onAddProductClick = {
-//                    navController.navigate(ROUTE_ADD_PRODUCT)
-//                },
-//                onProfileClick = {
-//                    navController.navigate(ROUTE_PROFILE)
-//                }
             )
         }
         composable(ROUTE_ADD_PRODUCT) {
             ScaffoldWithBottomBar(navController = navController) { padding ->
                 AddProductScreen( navController = navController)
             }
+        }
+        composable("$ROUTE_BUYER_PRODUCT_DETAIL/{productId}") { backStackEntry ->
+            val productId = backStackEntry.arguments?.getString("productId") ?: ""
+            BuyerProductDetailScreen(navController, productId, ProductViewModel())
+        }
+
+        composable(ROUTE_CART) {
+            CartScreen(navController)
         }
 
         composable(
@@ -80,13 +85,25 @@ fun AppNavHost(
         ) { backStackEntry ->
             val productId = backStackEntry.arguments?.getString("productId") ?: ""
             ScaffoldWithBottomBar(navController = navController) { padding ->
-            ProductDetailScreen(productId = productId, navController = navController)
+            BuyerProductDetailScreen(productId = productId, navController = navController)
         }
         }
+
+        composable("$ROUTE_SELLER_PRODUCT_DETAIL/{productId}") { backStackEntry ->
+            val productId = backStackEntry.arguments?.getString("productId") ?: ""
+            SellerProductDetailScreen(productId, navController, ProductViewModel())
+        }
+
         composable(ROUTE_PRODUCT_LIST) {
             ScaffoldWithBottomBar(navController = navController) { padding ->
                 ProductListScreen(navController,ProductViewModel())
             }
+        }
+        composable(
+            ROUTE_EDIT_PRODUCT
+        ) { backStackEntry ->
+            val productId = backStackEntry.arguments?.getString("productId") ?: ""
+            EditProductScreen(productId = productId, navController = navController)
         }
     }
 }

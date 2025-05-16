@@ -14,6 +14,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -55,6 +56,8 @@ fun LoginScreen(navController: NavHostController) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var error by remember { mutableStateOf("") }
+    var isLoading by remember { mutableStateOf(false) }
+
 
     Box(
         modifier = Modifier.fillMaxSize(),
@@ -115,12 +118,15 @@ fun LoginScreen(navController: NavHostController) {
 
             Button(
                 onClick = {
+                    isLoading = true
                     viewModel.login(email, password) { user, msg ->
+                        isLoading = false
                         if (user != null) {
-                            val route =
-                                if (user.role == "buyer") ROUTE_DASHBOARD else ROUTE_SELLER_HOME
+                            val route = if (user.role == "buyer") ROUTE_DASHBOARD else ROUTE_SELLER_HOME
                             navController.navigate(route)
-                        } else error = msg
+                        } else {
+                            error = msg
+                        }
                     }
                 },
                 modifier = Modifier.fillMaxWidth(),

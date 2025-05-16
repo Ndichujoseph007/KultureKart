@@ -28,6 +28,7 @@ import com.ndichu.kulturekart.navigation.ROUTE_BUYER
 import com.ndichu.kulturekart.navigation.ROUTE_BUYER_HOME
 import com.ndichu.kulturekart.navigation.ROUTE_DASHBOARD
 import com.ndichu.kulturekart.navigation.ROUTE_LOGIN
+import com.ndichu.kulturekart.navigation.ROUTE_REGISTER
 import com.ndichu.kulturekart.navigation.ROUTE_SELLER_HOME
 import kotlinx.coroutines.delay
 
@@ -51,7 +52,7 @@ fun SplashScreen(navController: NavController) {
                 navController.navigate(ROUTE_SELLER_HOME) { popUpTo(0) { inclusive = true } }
             } else {
                 // Handle potential unknown role (shouldn't happen in normal flow)
-                navController.navigate(ROUTE_LOGIN) { popUpTo(0) { inclusive = true } }
+                navController.navigate(ROUTE_REGISTER) { popUpTo(0) { inclusive = true } }
             }
         } else {
             navController.navigate(ROUTE_LOGIN) { popUpTo(0) { inclusive = true } }

@@ -27,6 +27,7 @@ class AuthViewModel @Inject constructor(): ViewModel() {
     private val _loginStateAndRole = MutableStateFlow(Pair(false, ""))
     val loginStateAndRole: StateFlow<Pair<Boolean, String>> get() = _loginStateAndRole
 
+
     init {
         val firebaseUser = auth.currentUser
         if (firebaseUser != null) {
@@ -35,6 +36,7 @@ class AuthViewModel @Inject constructor(): ViewModel() {
             }
         }
     }
+
 
     private suspend fun fetchUserRole(uid: String) {
         try {

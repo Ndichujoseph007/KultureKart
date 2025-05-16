@@ -13,4 +13,11 @@ const val ROUTE_DASHBOARD= "dashboard"
 const val ROUTE_PRODUCT_LIST= "product_list"
 const val ROUTE_BUYER= "home"
 const val ROUTE_PRODUCT_DETAIL_WITH_ARG = "product_detail/{productId}"
+const val ROUTE_BUYER_PRODUCT_DETAIL = "buyerProductDetail"
+const val ROUTE_CART = "cart"
+const val ROUTE_EDIT_PRODUCT = "edit_product"
+const val ROUTE_SELLER_PRODUCT_DETAIL= "product_detail"
+
+
+
 

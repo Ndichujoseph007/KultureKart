@@ -19,6 +19,7 @@ import coil.compose.AsyncImage
 import com.ndichu.kulturekart.model.Product
 import com.ndichu.kulturekart.data.ProductViewModel
 import com.google.firebase.auth.FirebaseAuth
+import com.ndichu.kulturekart.navigation.ROUTE_BUYER_PRODUCT_DETAIL
 
 @Composable
 fun ProductListSreen(
@@ -69,7 +70,7 @@ fun ProductListSreen(
             LazyColumn(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 items(filteredProducts) { product ->
                     ProductCard(product = product) {
-                        navController.navigate("product_details/${product.id}")
+                        navController.navigate("$ROUTE_BUYER_PRODUCT_DETAIL/${product.id}")
                     }
                 }
             }

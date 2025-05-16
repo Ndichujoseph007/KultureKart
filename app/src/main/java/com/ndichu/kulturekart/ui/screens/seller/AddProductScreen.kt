@@ -1,6 +1,7 @@
 package com.ndichu.kulturekart.ui.screens.seller
 
 
+import android.R.attr.navigationIcon
 import android.net.Uri
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -11,21 +12,24 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.paint
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
+import com.ndichu.kulturekart.R
 import com.ndichu.kulturekart.data.ProductViewModel // Import your ProductViewModel
-import com.ndichu.kulturekart.model.Product
-
 @Composable
 fun AddProductScreen(
     navController: NavController,
@@ -44,21 +48,32 @@ fun AddProductScreen(
 
     val isLoading by viewModel.isLoading.collectAsState()
     val error by viewModel.uploadError.collectAsState()
+    val background = painterResource(id = R.drawable.background)
 
     Surface(
         modifier = Modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.background
     ) {
+
+
         Column(
             modifier = Modifier
                 .padding(16.dp)
+                .paint(
+                    painter = background,
+                    contentScale = ContentScale.Crop
+                )
                 .verticalScroll(rememberScrollState())
         ) {
-            Text(
-                text = "Add New Product",
-                style = MaterialTheme.typography.headlineMedium,
-                color = MaterialTheme.colorScheme.primary
-            )
+            Box(modifier = Modifier.fillMaxWidth()) {
+                IconButton(
+                    onClick = { navController.popBackStack() },
+                    modifier = Modifier.align(Alignment.CenterStart)
+                ) {
+                    Icon(Icons.Filled.ArrowBack, contentDescription = "Back")
+                }
+            }
+
             Spacer(modifier = Modifier.height(20.dp))
 
             Card(
@@ -68,6 +83,11 @@ fun AddProductScreen(
                 elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
             ) {
                 Column(modifier = Modifier.padding(16.dp)) {
+                    Text(
+                        text = "Add New Product",
+                        style = MaterialTheme.typography.headlineMedium,
+                        color = MaterialTheme.colorScheme.primary
+                    )
 
                     OutlinedTextField(
                         value = name,
@@ -118,22 +138,6 @@ fun AddProductScreen(
                     ) {
                         Text("Select Image")
                     }
-
-                    imageUri.let {  // Use let for null check and scope
-                        if (it != null) {
-                            Spacer(modifier = Modifier.height(12.dp))
-                            Image(
-                                painter = rememberAsyncImagePainter(it),
-                                contentDescription = null,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(200.dp)
-                                    .clip(RoundedCornerShape(16.dp)),
-                                contentScale = ContentScale.Crop
-                            )
-                        }
-                    }
-
                     Spacer(modifier = Modifier.height(20.dp))
 
                     if (isLoading) {

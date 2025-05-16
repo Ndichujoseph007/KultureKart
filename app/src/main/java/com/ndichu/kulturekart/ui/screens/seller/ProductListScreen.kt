@@ -1,7 +1,6 @@
 package com.ndichu.kulturekart.ui.screens.seller
 
-import ProductCard
-import android.R.attr.id
+
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -18,7 +17,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.platform.LocalContext
 
 import androidx.compose.ui.text.input.KeyboardType
+import com.google.firebase.auth.FirebaseAuth
 import com.ndichu.kulturekart.navigation.ROUTE_ADD_PRODUCT
+import com.ndichu.kulturekart.navigation.ROUTE_SELLER_PRODUCT_DETAIL
 import com.ndichu.kulturekart.ui.components.product.ProductCard
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -29,10 +30,17 @@ fun ProductListScreen(
 ) {
     LaunchedEffect(Unit) {
         viewModel.fetchProducts()
+            viewModel.fetchUserRole()
+
     }
     // Collect the products from the ViewModel.  Use remember to prevent re-fetching
     val products by remember { viewModel.products }.collectAsState()
     val context = LocalContext.current
+
+
+    val userRole by viewModel.userRole.collectAsState()
+
+
 
 
 
@@ -42,9 +50,13 @@ fun ProductListScreen(
     var price by remember { mutableStateOf("") }
     var region by remember { mutableStateOf("") }
     var description by remember { mutableStateOf("") }
+    val currentUserId = FirebaseAuth.getInstance().currentUser?.uid
 
     val isLoading by viewModel.isLoading.collectAsState()
     val error by viewModel.uploadError.collectAsState()
+    val sellerProducts = remember(products) {
+        products.filter { it.sellerId == currentUserId }
+    }
 
     // Function to show a dialog for editing a product
     fun showEditDialog(product: Product) {
@@ -118,29 +130,30 @@ fun ProductListScreen(
                     LazyColumn(
                         verticalArrangement = Arrangement.spacedBy(12.dp),
                         modifier = Modifier.fillMaxSize()
+
                     ) {
-                        items(products) { product ->
-                            ProductCard(
+                        items(sellerProducts) { product ->
+                            ProductCard1(
                                 product = product,
                                 onClick = {
                                     navController.navigate("productDetail/${product.id}")
                                 },
-                                onEdit = {
-                                    showEditDialog(product)
-                                },
-                                onDelete = {
-                                    viewModel.deleteProduct(
-                                        context = context,
+                                onEdit = if (userRole == "seller") {
+                                    { showEditDialog(product) }
+                                } else null,
+                                onDelete = if (userRole == "seller") {
+                                    { viewModel.deleteProduct(   context = context,
                                         productId = product.id,
-                                        navController = navController
-                                    )
-                                }
+                                        navController = navController) }
+                                } else null
                             )
+                        }
                         }
                     }
 
                 }
         }
+
     }
 
     // Edit Product Dialog.
@@ -196,5 +209,54 @@ fun ProductListScreen(
             }
         )
     }
-}}
+}
+
+@Composable
+fun ProductCard1(
+    product: Product,
+    onClick: () -> Unit = {},
+    onEdit: (() -> Unit)? = null,
+    onDelete: (() -> Unit)? = null
+) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(4.dp),
+        elevation = CardDefaults.elevatedCardElevation()
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Text(text = product.name, style = MaterialTheme.typography.headlineSmall)
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(text = "Price: ${product.price}", style = MaterialTheme.typography.bodyLarge)
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(text = "Region: ${product.region}", style = MaterialTheme.typography.bodyMedium)
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(text = product.description, style = MaterialTheme.typography.bodySmall)
+            Spacer(modifier = Modifier.height(8.dp))
+
+            if (onEdit != null && onDelete != null) {
+                Row(
+                    horizontalArrangement = Arrangement.End,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Button(
+                        onClick = onEdit,
+                        modifier = Modifier.padding(end = 8.dp)
+                    ) {
+                        Text("Edit")
+                    }
+                    Button(
+                        onClick = onDelete,
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.error
+                        )
+                    ) {
+                        Text("Delete")
+                    }
+                }
+            }
+        }
+    }
+}
+
 

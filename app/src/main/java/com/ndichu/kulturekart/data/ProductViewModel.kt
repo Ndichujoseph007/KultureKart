@@ -4,21 +4,24 @@ import android.app.AlertDialog
 import android.content.Context
 import android.net.Uri
 import android.widget.Toast
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
+import com.google.firebase.storage.FirebaseStorage
 import com.ndichu.kulturekart.model.Product
 import com.ndichu.kulturekart.navigation.ROUTE_PRODUCT_LIST
 import com.ndichu.kulturekart.network.ImgurService
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -49,9 +52,7 @@ class ProductViewModel : ViewModel() {
 
         return retrofit.create(ImgurService::class.java)
     }
-    fun getProductById(id: String): Product? {
-        return _products.value.find { it.id == id }
-    }
+
 
 
     private fun getFileFromUri(context: Context, uri: Uri): File? {
@@ -75,6 +76,62 @@ class ProductViewModel : ViewModel() {
 
     private val _uploadError = MutableStateFlow<String?>(null)
     val uploadError: StateFlow<String?> = _uploadError
+//    private val userRole = MutableStateFlow<String>("buyer")
+
+    private val _userRole = MutableStateFlow("")
+    val userRole: StateFlow<String> = _userRole
+
+    fun getProductById(productId: String): Flow<Product?> = callbackFlow {
+        val productRef = database.child("products").child(productId)
+
+        val listener = object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val product = snapshot.getValue(Product::class.java)
+                trySend(product)
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                close(error.toException())
+            }
+        }
+
+        productRef.addValueEventListener(listener)
+
+        awaitClose {
+            productRef.removeEventListener(listener)
+        }
+    }
+
+
+
+
+
+
+    fun fetchUserRole() {
+        val uid = FirebaseAuth.getInstance().currentUser?.uid ?: return
+        val userRef = FirebaseDatabase.getInstance().reference.child("users").child(uid)
+
+        userRef.child("role").addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val productList = mutableListOf<Product>()
+                for (productSnapshot in snapshot.children) {
+                    productSnapshot.getValue(Product::class.java)?.let {
+                        productList.add(it)
+                    }
+                }
+                _products.value = productList
+                _isLoading.value = false // ✅ Stop loading after data arrives
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                _isLoading.value = false // ✅ Stop loading on error
+                _uploadError.value = error.message
+                // Handle error
+            }
+        })
+    }
+// default
+
 
     fun uploadProductWithImage(
         uri: Uri,
@@ -113,21 +170,21 @@ class ProductViewModel : ViewModel() {
                         description = description, // Added description
                         price = price, // Changed to String
                         imageUrl = imageUrl,
-                        id = productId // Changed to id
+                        id = productId
                     )
 
                     database.child(productId).setValue(product)
                         .addOnSuccessListener {
                             viewModelScope.launch {
                                 withContext(Dispatchers.Main) {
-                                    Toast.makeText(context, "Product saved successfully", Toast.LENGTH_SHORT).show() //changed from student to product
+                                    Toast.makeText(context, "Product saved successfully", Toast.LENGTH_SHORT).show()
                                     navController.navigate(ROUTE_PRODUCT_LIST)
                                 }
                             }
                         }.addOnFailureListener {
                             viewModelScope.launch {
                                 withContext(Dispatchers.Main) {
-                                    Toast.makeText(context, "Failed to save product", Toast.LENGTH_SHORT).show() //changed from student to product
+                                    Toast.makeText(context, "Failed to save product", Toast.LENGTH_SHORT).show()
                                 }
                             }
                         }
@@ -145,6 +202,15 @@ class ProductViewModel : ViewModel() {
             }
         }
     }
+
+
+
+
+
+
+
+
+
 
     fun fetchProducts(
 
@@ -178,64 +244,58 @@ class ProductViewModel : ViewModel() {
         region: String,
         price: String,
         description: String,
-        productId: String
+        productId: String,
+        newImageUri: Uri? = null // New param for new image
     ) {
-        // Find the existing product to retain the imageUrl
-        val currentImageUrl = _products.value.find { it.id == productId }?.imageUrl ?: ""
-
         val databaseReference = FirebaseDatabase.getInstance()
             .getReference("Products").child(productId)
 
-        val updatedProduct = Product(
-            name = name,
-            region = region,
-            description = description,
-            price = price,
-            imageUrl = currentImageUrl,
-            id = productId
-        )
+        // Helper to update product data in Firebase Realtime Database
+        fun updateProductInDb(imageUrl: String) {
+            val updatedProduct = Product(
+                id = productId,
+                name = name,
+                region = region,
+                description = description,
+                price = price,
+                imageUrl = imageUrl
+            )
 
-        databaseReference.setValue(updatedProduct)
-            .addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    Toast.makeText(context, "Product Updated Successfully", Toast.LENGTH_LONG).show()
-                    navController.navigate(ROUTE_PRODUCT_LIST)
-                } else {
-                    Toast.makeText(context, "Product update failed", Toast.LENGTH_LONG).show()
+            databaseReference.setValue(updatedProduct)
+                .addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        Toast.makeText(context, "Product Updated Successfully", Toast.LENGTH_LONG).show()
+                        navController.navigate(ROUTE_PRODUCT_LIST)
+                    } else {
+                        Toast.makeText(context, "Product update failed", Toast.LENGTH_LONG).show()
+                    }
                 }
+        }
+
+        if (newImageUri != null) {
+            // Upload new image first
+            val storageRef = FirebaseStorage.getInstance()
+                .reference.child("product_images/$productId.jpg")
+
+            val uploadTask = storageRef.putFile(newImageUri)
+            uploadTask.addOnSuccessListener {
+                // Get the download URL after upload
+                storageRef.downloadUrl.addOnSuccessListener { uri ->
+                    updateProductInDb(uri.toString())
+                }.addOnFailureListener {
+                    Toast.makeText(context, "Failed to retrieve image URL", Toast.LENGTH_LONG).show()
+                }
+            }.addOnFailureListener {
+                Toast.makeText(context, "Image upload failed", Toast.LENGTH_LONG).show()
             }
+        } else {
+            // No new image, so fetch current image URL and update product
+            // Assuming _products is your cached product list in ViewModel, otherwise fetch from DB
+            val currentImageUrl = _products.value.find { it.id == productId }?.imageUrl ?: ""
+            updateProductInDb(currentImageUrl)
+        }
     }
 
-//    fun updateproducts(
-//        context: Context,
-//        navController: NavController,
-//        name: String,
-//        region: String,
-//        price: String, // Changed to String
-//        description: String,
-//        productId: String
-//    ) {
-//        val databaseReference = FirebaseDatabase.getInstance().getReference("Products").child(productId) // Corrected path
-//        val updatedProduct = Product(
-//            name = name,  // Added name
-//            region = region, // Added region
-//            description = description, // Added description
-//            price = price, // Changed to String
-//            imageUrl = "", // Added imageUrl
-//            id = productId // Added id
-//        )
-//
-//        databaseReference.setValue(updatedProduct)
-//            .addOnCompleteListener { task ->
-//                if (task.isSuccessful) {
-//                    Toast.makeText(context, "Product Updated Successfully", Toast.LENGTH_LONG).show()
-//                    navController.navigate(ROUTE_PRODUCT_LIST)
-//                } else {
-//                    Toast.makeText(context, "Product update failed", Toast.LENGTH_LONG).show()
-//                }
-//            }
-//
-//    }
 
     fun deleteProduct(
         context: Context,
@@ -262,5 +322,15 @@ class ProductViewModel : ViewModel() {
             }
             .show()
     }
+    fun addToCart(product: Product) {
+        val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return
+        val cartRef = FirebaseDatabase.getInstance().reference
+            .child("cart")
+            .child(userId)
+            .child(product.id)
+
+        cartRef.setValue(product)
+    }
+
 }
 

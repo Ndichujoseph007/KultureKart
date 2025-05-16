@@ -119,7 +119,10 @@ dependencies {
     implementation ("androidx.activity:activity-compose:1.7.2")
 
 
-    //image upload
+    //Material3
+    implementation ("androidx.compose.material3:material3:1.1.0")
+    implementation("androidx.compose.material3:material3:1.2.1")
+
 
     // Image loading
     implementation("io.coil-kt:coil-compose:2.2.2")
