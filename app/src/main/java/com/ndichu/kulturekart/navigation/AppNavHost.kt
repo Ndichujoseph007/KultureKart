@@ -12,16 +12,13 @@ import com.ndichu.kulturekart.data.ProductViewModel
 import com.ndichu.kulturekart.ui.components.ScaffoldWithBottomBar
 import com.ndichu.kulturekart.ui.screens.auth.LoginScreen
 import com.ndichu.kulturekart.ui.screens.auth.RegisterScreen
-import com.ndichu.kulturekart.ui.screens.buyer.BuyerProductDetailScreen
 import com.ndichu.kulturekart.ui.screens.buyer.CartScreen
 import com.ndichu.kulturekart.ui.screens.buyer.DashboardScreen
 import com.ndichu.kulturekart.ui.screens.profile.AboutScreen
 import com.ndichu.kulturekart.ui.screens.profile.ProfileScreen
 import com.ndichu.kulturekart.ui.screens.seller.AddProductScreen
 import com.ndichu.kulturekart.ui.screens.seller.EditProductScreen
-import com.ndichu.kulturekart.ui.screens.seller.ProductListScreen
 import com.ndichu.kulturekart.ui.screens.seller.SellerHomeScreen
-import com.ndichu.kulturekart.ui.screens.seller.SellerProductDetailScreen
 import com.ndichu.kulturekart.ui.screens.splash.SplashScreen
 
 
@@ -62,7 +59,7 @@ fun AppNavHost(
         }
         composable(ROUTE_SELLER_HOME) {
             SellerHomeScreen(
-                navController = navController,
+                navController = navController
             )
         }
         composable(ROUTE_ADD_PRODUCT) {
@@ -70,40 +67,25 @@ fun AppNavHost(
                 AddProductScreen( navController = navController)
             }
         }
-        composable("$ROUTE_BUYER_PRODUCT_DETAIL/{productId}") { backStackEntry ->
-            val productId = backStackEntry.arguments?.getString("productId") ?: ""
-            BuyerProductDetailScreen(navController, productId, ProductViewModel())
-        }
-
         composable(ROUTE_CART) {
             CartScreen(navController)
         }
 
-        composable(
-            route = ROUTE_PRODUCT_DETAIL_WITH_ARG,
-            arguments = listOf(navArgument("productId") { type = NavType.StringType })
-        ) { backStackEntry ->
+
+
+
+//        composable("$ROUTE_SELLER_PRODUCT_DETAIL/{productId}") { backStackEntry ->
+//            val productId = backStackEntry.arguments?.getString("productId") ?: ""
+//            SellerProductDetailScreen(productId, navController)
+//        }
+        composable("$ROUTE_EDIT_PRODUCT/{productId}") { backStackEntry ->
             val productId = backStackEntry.arguments?.getString("productId") ?: ""
-            ScaffoldWithBottomBar(navController = navController) { padding ->
-            BuyerProductDetailScreen(productId = productId, navController = navController)
-        }
+            EditProductScreen(productId, navController)
         }
 
-        composable("$ROUTE_SELLER_PRODUCT_DETAIL/{productId}") { backStackEntry ->
-            val productId = backStackEntry.arguments?.getString("productId") ?: ""
-            SellerProductDetailScreen(productId, navController, ProductViewModel())
-        }
 
-        composable(ROUTE_PRODUCT_LIST) {
-            ScaffoldWithBottomBar(navController = navController) { padding ->
-                ProductListScreen(navController,ProductViewModel())
-            }
-        }
-        composable(
-            ROUTE_EDIT_PRODUCT
-        ) { backStackEntry ->
-            val productId = backStackEntry.arguments?.getString("productId") ?: ""
-            EditProductScreen(productId = productId, navController = navController)
-        }
+
+
+
     }
-}
+    }

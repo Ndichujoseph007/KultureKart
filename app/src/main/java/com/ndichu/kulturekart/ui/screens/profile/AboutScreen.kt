@@ -42,7 +42,6 @@ fun AboutScreen(modifier: Modifier = Modifier,
                 painter = background,
                 contentScale = ContentScale.Crop
             )
-//            .background(MaterialTheme.colorScheme.background)
             .padding(16.dp)
             .verticalScroll(rememberScrollState())
     ) {

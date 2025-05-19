@@ -600,7 +600,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Search
@@ -616,9 +615,9 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.ndichu.kulturekart.data.ProductViewModel
+import com.ndichu.kulturekart.navigation.ROUTE_ADD_PRODUCT
 import com.ndichu.kulturekart.navigation.ROUTE_BUYER_PRODUCT_DETAIL
 import com.ndichu.kulturekart.navigation.ROUTE_CART
-import com.ndichu.kulturekart.navigation.ROUTE_PRODUCT_DETAIL_WITH_ARG
 import com.ndichu.kulturekart.navigation.ROUTE_PROFILE
 import com.ndichu.kulturekart.ui.components.product.ProductCard
 
@@ -725,7 +724,8 @@ fun DashboardScreen(
                         ProductCard(
                             product = product,
                             onClick = {
-                                navController.navigate("$ROUTE_BUYER_PRODUCT_DETAIL/${product.id}")
+                                navController.navigate("$ROUTE_CART/${product.id}")
+
                             }
                         )
                     }
@@ -735,34 +735,6 @@ fun DashboardScreen(
     }
 }
 
-//
-//@Composable
-//fun ProductCard(
-//    product: Product,
-//    onClick: () -> Unit,
-//    onEdit: (() -> Unit)? = null,
-//    onDelete: (() -> Unit)? = null
-//) {
-//    Card(
-//        onClick = onClick,
-//        modifier = Modifier.fillMaxWidth()
-//    ) {
-//        Row(modifier = Modifier.padding(16.dp)) {
-//            Image(
-//                painter = rememberAsyncImagePainter(product.imageUrl),
-//                contentDescription = product.name,
-//                modifier = Modifier
-//                    .size(80.dp)
-//                    .padding(end = 16.dp)
-//            )
-//            Column {
-//                Text(product.name, style = MaterialTheme.typography.titleMedium)
-//                Text(product.region, style = MaterialTheme.typography.bodySmall)
-//                Text("$${product.price}", style = MaterialTheme.typography.bodyMedium)
-//            }
-//        }
-//    }
-//}
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun DashboardScreenPreview() {

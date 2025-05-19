@@ -20,6 +20,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.paint
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -49,6 +50,7 @@ fun AddProductScreen(
     val isLoading by viewModel.isLoading.collectAsState()
     val error by viewModel.uploadError.collectAsState()
     val background = painterResource(id = R.drawable.background)
+    val GoldDark = Color(0xFFB8860B) // Dark goldenrod hex color
 
     Surface(
         modifier = Modifier.fillMaxSize(),

@@ -22,6 +22,7 @@ val GoldLight1 = Color(0xFFFFD700)
 val GoldDark1 = Color(0xFFB8860B)
 val BackgroundDark = Color(0xFF121212)
 val BackgroundLight = Color(0xFF8BC34A)
+val GoldDark2 = Color(0xFFB8860B) // Dark goldenrod hex color
 
 
 
