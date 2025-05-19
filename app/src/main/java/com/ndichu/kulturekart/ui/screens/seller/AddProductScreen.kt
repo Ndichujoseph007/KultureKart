@@ -28,6 +28,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import coil.compose.AsyncImage
 import coil.compose.rememberAsyncImagePainter
 import com.ndichu.kulturekart.R
 import com.ndichu.kulturekart.data.ProductViewModel // Import your ProductViewModel
@@ -139,6 +140,15 @@ fun AddProductScreen(
                         shape = RoundedCornerShape(12.dp)
                     ) {
                         Text("Select Image")
+                    }
+                    imageUri?.let {
+                        AsyncImage(
+                            model = it,
+                            contentDescription = null,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(100.dp)
+                        )
                     }
                     Spacer(modifier = Modifier.height(20.dp))
 

@@ -4,7 +4,7 @@ package com.ndichu.kulturekart.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-val Gold = Color(0xFFFFD700)
+val Gold = Color(0xFFFFEB3B)
 val GoldDark = Color(0xFFC5A100)
 val GoldLight = Color(0xFFFFECB3)
 
@@ -14,7 +14,7 @@ val LightBackground = Color(0xFFFFFFFF)
 val TextPrimary = Color(0xFF212121)
 val TextSecondary = Color(0xFF757575)
 
-val ErrorRed = Color(0xFFB00020)
+val ErrorRed = Color(0xFFF30303)
 val SuccessGreen = Color(0xFF4CAF50)
 
 

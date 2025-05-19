@@ -460,6 +460,57 @@ override fun onDataChange(snapshot: DataSnapshot) {
     }
 
 
+    fun updateProductWithImage(
+        context: Context,
+        navController: NavController,
+        productId: String,
+        name: String,
+        price: String,
+        region: String,
+        description: String,
+        newImageUri: Uri?
+    ) {
+        val databaseRef = FirebaseDatabase.getInstance().getReference("products").child(productId)
+
+        if (newImageUri != null) {
+            val storageRef = FirebaseStorage.getInstance().reference
+                .child("product_images/$productId.jpg")
+
+            storageRef.putFile(newImageUri)
+                .addOnSuccessListener {
+                    storageRef.downloadUrl.addOnSuccessListener { uri ->
+                        val updatedProduct = Product(
+                            id = productId,
+                            name = name,
+                            price = price,
+                            region = region,
+                            description = description,
+                            imageUrl = uri.toString()
+                        )
+                        databaseRef.setValue(updatedProduct).addOnSuccessListener {
+                            Toast.makeText(context, "Product updated", Toast.LENGTH_SHORT).show()
+                            navController.popBackStack() // Go back
+                        }
+                    }
+                }
+                .addOnFailureListener {
+                    Toast.makeText(context, "Failed to upload image", Toast.LENGTH_SHORT).show()
+                }
+        } else {
+            // No new image, update other fields only
+            databaseRef.child("name").setValue(name)
+            databaseRef.child("price").setValue(price)
+            databaseRef.child("region").setValue(region)
+            databaseRef.child("description").setValue(description)
+                .addOnSuccessListener {
+                    Toast.makeText(context, "Product updated", Toast.LENGTH_SHORT).show()
+                    navController.popBackStack()
+                }
+        }
+    }
+
+
+
 
     fun addToCart(product: Product) {
         val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return

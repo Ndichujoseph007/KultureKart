@@ -4,6 +4,7 @@ package com.ndichu.kulturekart.ui.theme
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
+import com.ndichu.kulturekart.ui.theme.SuccessGreen
 
 private val LightColorScheme = lightColorScheme(
     primary = Gold,
@@ -14,7 +15,8 @@ private val LightColorScheme = lightColorScheme(
     onBackground = TextPrimary,
     onSurface = TextPrimary,
     error = ErrorRed,
-    onError = Color.White
+    onError = Color.White,
+
 )
 
 private val DarkColorScheme = darkColorScheme(
@@ -26,7 +28,8 @@ private val DarkColorScheme = darkColorScheme(
     onBackground = Color.White,
     onSurface = Color.White,
     error = ErrorRed,
-    onError = Color.White
+    onError = Color.White,
+
 )
 
 

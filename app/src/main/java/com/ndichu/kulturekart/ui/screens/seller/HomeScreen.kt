@@ -39,6 +39,15 @@ import com.ndichu.kulturekart.navigation.ROUTE_PRODUCT_LIST
 import com.ndichu.kulturekart.navigation.ROUTE_PROFILE
 import com.ndichu.kulturekart.navigation.ROUTE_SELLER_HOME
 import com.ndichu.kulturekart.navigation.ROUTE_SELLER_PRODUCT_DETAIL
+import android.net.Uri
+import android.util.Log
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.text.input.KeyboardType
+import coil.compose.AsyncImage
+import kotlin.toString
 
 
 @SuppressLint("StateFlowValueCalledInComposition")
@@ -137,14 +146,17 @@ fun SellerHomeScreen(
                 items(sellerProducts) { product ->
                     ProductItemCard(
                         product = product,
-                        onEditClick = {
-                            navController.navigate("$ROUTE_EDIT_PRODUCT/${product.id}")
+//                        onEditClick = {
+//                            navController.navigate("$ROUTE_EDIT_PRODUCT/${product.id}")
+//                        },
+                        onSave = { updatedProduct, imageUri ->
+                            // TODO: Connect with ViewModel later
+                            Log.d("updated product", "Updated: $updatedProduct")
                         },
                         onDeleteClick = {
                             val productId = product.id
                             viewModel.deleteProduct(context,productId,navController)
                         }
-
                     )
                 }
 
@@ -159,17 +171,33 @@ fun SellerHomeScreen(
 @Composable
 fun ProductItemCard(
     product: Product,
-    onEditClick: () -> Unit,
-    onDeleteClick: () -> Unit
+    onDeleteClick: () -> Unit,
+    onSave: (Product, Uri?) -> Unit,
+    modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
+    var isEditing by remember { mutableStateOf(false) }
+    var name by remember { mutableStateOf(product.name) }
+    var price by remember { mutableStateOf(product.price) }
+    var region by remember { mutableStateOf(product.region) }
+    var description by remember { mutableStateOf(product.description) }
+    var imageUri by remember { mutableStateOf<Uri?>(null) }
+
+    val launcher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) {
+        imageUri = it
+    }
 
     Card(
-        modifier = Modifier
+        modifier = modifier
+            .padding(8.dp)
             .fillMaxWidth()
-            .padding(horizontal = 8.dp, vertical = 4.dp),
-        shape = MaterialTheme.shapes.medium,
-        elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
+            .shadow(2.dp, RoundedCornerShape(12.dp)),
+        shape = RoundedCornerShape(12.dp)
+//        modifier = Modifier
+//            .fillMaxWidth()
+//            .padding(horizontal = 8.dp, vertical = 4.dp),
+//        shape = MaterialTheme.shapes.medium,
+//        elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Row {
@@ -201,8 +229,13 @@ fun ProductItemCard(
             Spacer(modifier = Modifier.height(12.dp))
 
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+
+
+
+                ////edit button
                 Button(
-                    onClick = onEditClick,
+                    onClick = { isEditing = true},
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary),
                     modifier = Modifier.weight(1f),
                 ) {
                     Icon(
@@ -215,6 +248,9 @@ fun ProductItemCard(
                         modifier = Modifier.weight(0.8f)
                     )
                 }
+
+
+                ///delete button
                 Button(
                     onClick = onDeleteClick,
                     colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error),
@@ -233,4 +269,58 @@ fun ProductItemCard(
             }
         }
     }
+    if (isEditing) {
+        AlertDialog(
+            onDismissRequest = { isEditing = false },
+            title = { Text("Edit Product") },
+            text = {
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    OutlinedTextField(value = name, onValueChange = { name = it }, label = { Text("Name") })
+                    OutlinedTextField(value = price, onValueChange = { price = it }, label = { Text("Price") },
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number))
+                    OutlinedTextField(value = region, onValueChange = { region = it }, label = { Text("Region") })
+                    OutlinedTextField(value = description, onValueChange = { description = it }, label = { Text("Description") })
+
+                    Button(onClick = { launcher.launch("image/*") }) {
+                        Text("Pick Image")
+                    }
+                    imageUri?.let {
+                        AsyncImage(
+                            model = it,
+                            contentDescription = null,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(100.dp)
+                        )
+                    }
+                }
+            },
+            confirmButton = {
+                Button(onClick = {
+                    onSave(
+                        product.copy(
+                            name = name,
+                            price = price,
+                            region = region,
+                            description = description,
+                            imageUrl = imageUri?.toString() ?: product.imageUrl
+                        ),
+                        imageUri
+                    )
+                    isEditing = false
+                }) {
+                    Text("Save")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { isEditing = false }) {
+                    Text("Cancel")
+                }
+            },
+            containerColor = MaterialTheme.colorScheme.surface,
+            shape = RoundedCornerShape(16.dp)
+        )
+    }
 }
+
+
