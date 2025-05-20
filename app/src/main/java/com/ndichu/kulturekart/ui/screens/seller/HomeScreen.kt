@@ -3,7 +3,6 @@ package com.ndichu.kulturekart.ui.screens.seller
 import android.annotation.SuppressLint
 import android.widget.Toast
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -13,20 +12,16 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.paint
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.ndichu.kulturekart.data.ProductViewModel
@@ -34,20 +29,15 @@ import com.ndichu.kulturekart.model.Product
 import com.ndichu.kulturekart.navigation.ROUTE_ADD_PRODUCT
 import coil.compose.rememberAsyncImagePainter
 import com.ndichu.kulturekart.R
-import com.ndichu.kulturekart.navigation.ROUTE_EDIT_PRODUCT
-import com.ndichu.kulturekart.navigation.ROUTE_PRODUCT_LIST
 import com.ndichu.kulturekart.navigation.ROUTE_PROFILE
 import com.ndichu.kulturekart.navigation.ROUTE_SELLER_HOME
-import com.ndichu.kulturekart.navigation.ROUTE_SELLER_PRODUCT_DETAIL
 import android.net.Uri
-import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.text.input.KeyboardType
 import coil.compose.AsyncImage
-import kotlin.toString
 
 
 @SuppressLint("StateFlowValueCalledInComposition")
@@ -59,6 +49,8 @@ fun SellerHomeScreen(
 ) {
 
     val sellerProducts by viewModel.sellerProducts.collectAsState()
+
+
 
     LaunchedEffect(Unit) {
         viewModel.fetchUserRole()
@@ -146,13 +138,11 @@ fun SellerHomeScreen(
                 items(sellerProducts) { product ->
                     ProductItemCard(
                         product = product,
-//                        onEditClick = {
-//                            navController.navigate("$ROUTE_EDIT_PRODUCT/${product.id}")
-//                        },
                         onSave = { updatedProduct, imageUri ->
-                            // TODO: Connect with ViewModel later
-                            Log.d("updated product", "Updated: $updatedProduct")
-                        },
+                            viewModel.updateProductInList(updatedProduct)
+                            Toast.makeText(context, "Product updated", Toast.LENGTH_SHORT).show()
+                        }
+                        ,
                         onDeleteClick = {
                             val productId = product.id
                             viewModel.deleteProduct(context,productId,navController)
@@ -193,11 +183,6 @@ fun ProductItemCard(
             .fillMaxWidth()
             .shadow(2.dp, RoundedCornerShape(12.dp)),
         shape = RoundedCornerShape(12.dp)
-//        modifier = Modifier
-//            .fillMaxWidth()
-//            .padding(horizontal = 8.dp, vertical = 4.dp),
-//        shape = MaterialTheme.shapes.medium,
-//        elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Row {

@@ -312,34 +312,6 @@ override fun onDataChange(snapshot: DataSnapshot) {
 //    }
 
 
-//
-//    fun deleteProduct(
-//        context: Context,
-//        productId: String,
-//        navController: NavController
-//    ) {
-//        AlertDialog.Builder(context)
-//            .setTitle("Delete Product")
-//            .setMessage("Are you sure you want to delete this product?")
-//            .setPositiveButton("Yes") { _, _ ->
-//                val databaseReference = FirebaseDatabase.getInstance().getReference("Products").child(productId)  // Corrected path
-//                databaseReference.removeValue().addOnCompleteListener { task ->
-//                    if (task.isSuccessful) {
-//                        Toast.makeText(context, "Product deleted Successfully", Toast.LENGTH_LONG).show()
-//                        loadSellerProducts()
-//                        navController.navigate(ROUTE_PRODUCT_LIST) // Navigate after successful deletion
-//                    } else {
-//                        Toast.makeText(context, "product not deleted", Toast.LENGTH_LONG).show()
-//                        fetchProducts()
-//                    }
-//                }
-//            }
-//            .setNegativeButton("No") { dialog, _ ->
-//                dialog.dismiss()
-//            }
-//            .show()
-//    }
-
     fun getProductById(productId: String, onResult: (Product?) -> Unit) {
         database.child("products").child(productId)
             .addListenerForSingleValueEvent(object : ValueEventListener {
@@ -508,6 +480,14 @@ override fun onDataChange(snapshot: DataSnapshot) {
                 }
         }
     }
+
+
+    fun updateProductInList(updatedProduct: Product) {
+        _sellerProducts.value = _sellerProducts.value.map {
+            if (it.id == updatedProduct.id) updatedProduct else it
+        }
+    }
+
 
 
 
