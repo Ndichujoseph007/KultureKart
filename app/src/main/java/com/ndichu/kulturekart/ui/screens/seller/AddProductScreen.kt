@@ -62,10 +62,10 @@ fun AddProductScreen(
         Column(
             modifier = Modifier
                 .padding(16.dp)
-                .paint(
-                    painter = background,
-                    contentScale = ContentScale.Crop
-                )
+//                .paint(
+//                    painter = background,
+//                    contentScale = ContentScale.Crop
+//                )
                 .verticalScroll(rememberScrollState())
         ) {
             Box(modifier = Modifier.fillMaxWidth()) {

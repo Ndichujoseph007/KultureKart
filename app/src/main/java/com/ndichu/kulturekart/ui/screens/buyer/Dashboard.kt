@@ -724,7 +724,7 @@ fun DashboardScreen(
                         ProductCard(
                             product = product,
                             onClick = {
-                                navController.navigate("$ROUTE_CART/${product.id}")
+                                viewModel.addToCart(product)
 
                             }
                         )
@@ -741,4 +741,9 @@ fun DashboardScreenPreview() {
     val navController = rememberNavController()
     DashboardScreen(navController = navController)
 }
+//val viewModel: CartViewModel = viewModel()
+//Button(onClick = { viewModel.addToCart(product) }) {
+//    Text("Add to Cart")
+//}
+
 

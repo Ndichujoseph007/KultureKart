@@ -73,7 +73,7 @@ class ProductViewModel : ViewModel() {
             null
         }
     }
-    private val _products = MutableStateFlow<List<Product>>(emptyList())  // Initial value
+    private val _products = MutableStateFlow<List<Product>>(emptyList())
     val products: StateFlow<List<Product>> = _products
 
     private val _isLoading = MutableStateFlow(false)
@@ -143,17 +143,17 @@ override fun onDataChange(snapshot: DataSnapshot) {
 
                 if (response.isSuccessful) {
                     val imageUrl = response.body()?.data?.link ?: ""
-                    val sellerId = FirebaseAuth.getInstance().currentUser?.uid////today
+                    val sellerId = FirebaseAuth.getInstance().currentUser?.uid
 
                     val productId = database.push().key ?: ""
                     val product = Product(
-                        name = name,  // Added name
-                        region = region, // Added region
-                        description = description, // Added description
-                        price = price, // Changed to String
+                        name = name,
+                        region = region,
+                        description = description,
+                        price = price,
                         imageUrl = imageUrl,
                         id = productId,
-                        sellerId = sellerId ?: ""//today
+                        sellerId = sellerId ?: ""
                     )
 
                     database.child(productId).setValue(product)
@@ -219,13 +219,6 @@ override fun onDataChange(snapshot: DataSnapshot) {
 
 
 
-
-
-
-
-
-
-
     fun fetchProducts(
 
     ) {
@@ -250,66 +243,6 @@ override fun onDataChange(snapshot: DataSnapshot) {
             }
         })
     }
-
-//    fun updateproducts(
-//        context: Context,
-//        navController: NavController,
-//        name: String,
-//        region: String,
-//        price: String,
-//        description: String,
-//        productId: String,
-//        newImageUri: Uri? = null // New param for new image
-//    ) {
-//        val databaseReference = FirebaseDatabase.getInstance()
-//            .getReference("Products").child(productId)
-//
-//        // Helper to update product data in Firebase Realtime Database
-//        fun updateProductInDb(imageUrl: String) {
-//            val updatedProduct = Product(
-//                id = productId,
-//                name = name,
-//                region = region,
-//                description = description,
-//                price = price,
-//                imageUrl = imageUrl
-//            )
-//
-//            databaseReference.setValue(updatedProduct)
-//                .addOnCompleteListener { task ->
-//                    if (task.isSuccessful) {
-//                        Toast.makeText(context, "Product Updated Successfully", Toast.LENGTH_LONG).show()
-//                        loadSellerProducts()
-//                        navController.navigate(ROUTE_PRODUCT_LIST)
-//                    } else {
-//                        Toast.makeText(context, "Product update failed", Toast.LENGTH_LONG).show()
-//                    }
-//                }
-//        }
-//
-//        if (newImageUri != null) {
-//            // Upload new image first
-//            val storageRef = FirebaseStorage.getInstance()
-//                .reference.child("product_images/$productId.jpg")
-//
-//            val uploadTask = storageRef.putFile(newImageUri)
-//            uploadTask.addOnSuccessListener {
-//                // Get the download URL after upload
-//                storageRef.downloadUrl.addOnSuccessListener { uri ->
-//                    updateProductInDb(uri.toString())
-//                }.addOnFailureListener {
-//                    Toast.makeText(context, "Failed to retrieve image URL", Toast.LENGTH_LONG).show()
-//                }
-//            }.addOnFailureListener {
-//                Toast.makeText(context, "Image upload failed", Toast.LENGTH_LONG).show()
-//            }
-//        } else {
-//            // No new image, so fetch current image URL and update product
-//            // Assuming _products is your cached product list in ViewModel, otherwise fetch from DB
-//            val currentImageUrl = _products.value.find { it.id == productId }?.imageUrl ?: ""
-//            updateProductInDb(currentImageUrl)
-//        }
-//    }
 
 
     fun getProductById(productId: String, onResult: (Product?) -> Unit) {

@@ -128,7 +128,7 @@ fun ProfileScreen(navController: NavHostController) {
                             val route =
                                 if (selectedRole == "buyer") ROUTE_DASHBOARD else ROUTE_SELLER_HOME
                             navController.navigate(route) {
-                                popUpTo(0) // Clear back stack
+                                popUpTo(0)
                             }
                         }
                     }

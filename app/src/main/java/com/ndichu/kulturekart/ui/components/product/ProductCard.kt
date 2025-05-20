@@ -22,10 +22,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ndichu.kulturekart.model.Product
 import coil.compose.AsyncImage
 import coil.compose.rememberAsyncImagePainter
-
+import com.ndichu.kulturekart.data.CartViewModel
 
 
 @Composable
@@ -43,11 +44,11 @@ fun ProductCard(
                 painter = rememberAsyncImagePainter(product.imageUrl),
                 contentDescription = product.name,
                 modifier = Modifier
-                    .size(80.dp)
+                    .size(140.dp)
                     .padding(end = 16.dp)
             )
             Column {
-                Text(text = product.name, style = MaterialTheme.typography.titleMedium)
+                Text(text = "Name:${product.name}",style = MaterialTheme.typography.titleMedium)
                 Text(text = "Price: $${product.price}", style = MaterialTheme.typography.bodyMedium)
                 Text(text = "Region: ${product.region}", style = MaterialTheme.typography.bodySmall)
                 Text(
@@ -57,22 +58,19 @@ fun ProductCard(
             }
         }
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+
+            val viewModel: CartViewModel = viewModel()
             Button(
-                onClick = onClick,
-                modifier = Modifier
-                    .weight(1f),
+                onClick = { viewModel.addToCart(product) }
             ) {
                 Icon(
                     imageVector = Icons.Filled.ShoppingCart,
                     contentDescription = "Cart",
                     modifier = Modifier.weight(0.2f)
                 )
-                Text(
-                    "Add To Cart",
-                    modifier = Modifier
-                        .weight(0.8f)
-                )
+                Text("Add to Cart")
             }
+
         }
     }
 }

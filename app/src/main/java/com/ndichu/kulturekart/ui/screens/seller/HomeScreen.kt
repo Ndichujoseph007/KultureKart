@@ -34,10 +34,16 @@ import com.ndichu.kulturekart.navigation.ROUTE_SELLER_HOME
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.text.input.KeyboardType
 import coil.compose.AsyncImage
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.text.style.TextAlign
 
 
 @SuppressLint("StateFlowValueCalledInComposition")
@@ -61,11 +67,9 @@ fun SellerHomeScreen(
     val role by viewModel.userRole.collectAsState()
     val context = LocalContext.current
 
-    val background = painterResource(id = R.drawable.background)
 
 
 
-    // Fetch products on first composition
 
 
     Scaffold(
@@ -123,29 +127,36 @@ fun SellerHomeScreen(
         }
 
     ) { paddingValues ->
+        if (sellerProducts.isEmpty()) {
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .paint(
-                        painter = background,
-                        contentScale = ContentScale.Crop
-                    )
                     .padding(paddingValues),
                 contentAlignment = Alignment.Center
             ) {
-            LazyColumn(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-
-                items(sellerProducts) { product ->
+                Text("No products found", textAlign = TextAlign.Center)
+            }
+        } else {
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(2),
+                modifier = Modifier
+                    .padding(paddingValues)
+                    .fillMaxSize(),
+                contentPadding = PaddingValues(8.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                items(sellerProducts.size) { index ->
+                    val product = sellerProducts[index]
                     ProductItemCard(
                         product = product,
                         onSave = { updatedProduct, imageUri ->
                             viewModel.updateProductInList(updatedProduct)
                             Toast.makeText(context, "Product updated", Toast.LENGTH_SHORT).show()
-                        }
-                        ,
+                        },
                         onDeleteClick = {
                             val productId = product.id
-                            viewModel.deleteProduct(context,productId,navController)
+                            viewModel.deleteProduct(context, productId, navController)
                         }
                     )
                 }
@@ -153,11 +164,15 @@ fun SellerHomeScreen(
             }
         }
 
-
     }
 
 }
 
+
+
+
+
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProductItemCard(
     product: Product,
@@ -166,7 +181,9 @@ fun ProductItemCard(
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
-    var isEditing by remember { mutableStateOf(false) }
+    var showSheet by remember { mutableStateOf(false) }
+
+    // Editing State
     var name by remember { mutableStateOf(product.name) }
     var price by remember { mutableStateOf(product.price) }
     var region by remember { mutableStateOf(product.region) }
@@ -177,135 +194,157 @@ fun ProductItemCard(
         imageUri = it
     }
 
+    // Main Product Card
+
     Card(
-        modifier = modifier
-            .padding(8.dp)
+        modifier = Modifier
             .fillMaxWidth()
-            .shadow(2.dp, RoundedCornerShape(12.dp)),
-        shape = RoundedCornerShape(12.dp)
+            .height(260.dp),
+        shape = RoundedCornerShape(12.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Row {
-                Image(
-                    painter = rememberAsyncImagePainter(product.imageUrl),
-                    contentDescription = product.name,
-                    modifier = Modifier
-                        .size(80.dp)
-                        .padding(end = 16.dp)
-                )
-                Column(modifier = Modifier.align(Alignment.CenterVertically)) {
-                    Text(text = product.name, style = MaterialTheme.typography.titleMedium)
-                    Text(
-                        text = "Price: $${product.price}",
-                        style = MaterialTheme.typography.bodyMedium
-                    )
-                    Text(
-                        text = "Region: ${product.region}",
-                        style = MaterialTheme.typography.bodySmall
-                    )
-                    Text(
-                        text = "Description: ${product.description}",
-                        style = MaterialTheme.typography.bodySmall
-                    )
+        Column(
+            modifier = Modifier.padding(8.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Image(
+                painter = rememberAsyncImagePainter(product.imageUrl),
+                contentDescription = product.name,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(140.dp)
+                    .clip(RoundedCornerShape(8.dp))
+            )
+
+            Text(
+                text = "Name:${product.name}",
+                style = MaterialTheme.typography.titleMedium,
+                maxLines = 1
+            )
+            Text(
+                text = "Region:${product.region}",
+                style = MaterialTheme.typography.titleMedium,
+                maxLines = 1
+            )
+
+            Text(
+                text = "Price:$${product.price}",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.secondary
+            )
+            Text(
+                text = "Description:${product.description}",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.secondary
+            )
+
+            Row(
+                horizontalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                IconButton(onClick = {showSheet = true}) {
+                    Icon(Icons.Default.Edit, contentDescription = "Edit")
                 }
-
-            }
-
-            Spacer(modifier = Modifier.height(12.dp))
-
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-
-
-
-                ////edit button
-                Button(
-                    onClick = { isEditing = true},
-                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary),
-                    modifier = Modifier.weight(1f),
-                ) {
-                    Icon(
-                        imageVector = Icons.Filled.Edit,
-                        contentDescription = "Edit",
-                        modifier = Modifier.weight(0.2f)
-                    )
-                    Text(
-                        "Edit",
-                        modifier = Modifier.weight(0.8f)
-                    )
-                }
-
-
-                ///delete button
-                Button(
-                    onClick = onDeleteClick,
-                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error),
-                    modifier = Modifier.weight(1f)
-                ) {
-                    Icon(
-                        imageVector = Icons.Filled.Delete,
-                        contentDescription = "Delete",
-                        modifier = Modifier.weight(0.2f)
-                    )
-                    Text(
-                        "Delete",
-                        modifier = Modifier.weight(0.8f)
-                    )
+                IconButton(onClick = onDeleteClick) {
+                    Icon(Icons.Default.Delete, contentDescription = "Delete")
                 }
             }
         }
     }
-    if (isEditing) {
-        AlertDialog(
-            onDismissRequest = { isEditing = false },
-            title = { Text("Edit Product") },
-            text = {
-                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    OutlinedTextField(value = name, onValueChange = { name = it }, label = { Text("Name") })
-                    OutlinedTextField(value = price, onValueChange = { price = it }, label = { Text("Price") },
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number))
-                    OutlinedTextField(value = region, onValueChange = { region = it }, label = { Text("Region") })
-                    OutlinedTextField(value = description, onValueChange = { description = it }, label = { Text("Description") })
 
-                    Button(onClick = { launcher.launch("image/*") }) {
-                        Text("Pick Image")
-                    }
-                    imageUri?.let {
-                        AsyncImage(
-                            model = it,
-                            contentDescription = null,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(100.dp)
-                        )
-                    }
-                }
-            },
-            confirmButton = {
-                Button(onClick = {
-                    onSave(
-                        product.copy(
-                            name = name,
-                            price = price,
-                            region = region,
-                            description = description,
-                            imageUrl = imageUri?.toString() ?: product.imageUrl
-                        ),
-                        imageUri
-                    )
-                    isEditing = false
-                }) {
-                    Text("Save")
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = { isEditing = false }) {
-                    Text("Cancel")
-                }
-            },
+
+    // Modal Bottom Sheet for Editing
+    if (showSheet) {
+        ModalBottomSheet(
+            onDismissRequest = { showSheet = false },
             containerColor = MaterialTheme.colorScheme.surface,
-            shape = RoundedCornerShape(16.dp)
-        )
+            shape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp)
+        ) {
+            Column(
+                Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                Text(
+                    text = "Edit Product",
+                    style = MaterialTheme.typography.titleLarge,
+                    color = MaterialTheme.colorScheme.primary
+                )
+
+
+                OutlinedTextField(
+                    value = name,
+                    onValueChange = { name = it },
+                    label = { Text("Name") },
+                    modifier = Modifier.fillMaxWidth()
+                )
+                OutlinedTextField(
+                    value = price,
+                    onValueChange = { price = it },
+                    label = { Text("Price") },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                    modifier = Modifier.fillMaxWidth()
+                )
+                OutlinedTextField(
+                    value = region,
+                    onValueChange = { region = it },
+                    label = { Text("Region") },
+                    modifier = Modifier.fillMaxWidth()
+                )
+                OutlinedTextField(
+                    value = description,
+                    onValueChange = { description = it },
+                    label = { Text("Description") },
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                Button(
+                    onClick = { launcher.launch("image/*") },
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.tertiary)
+                ) {
+                    Text("Pick Image", color = MaterialTheme.colorScheme.onTertiary)
+                }
+
+                imageUri?.let {
+                    AsyncImage(
+                        model = it,
+                        contentDescription = null,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(140.dp)
+                            .clip(RoundedCornerShape(8.dp))
+                    )
+                }
+
+                Button(
+                    onClick = {
+                        onSave(
+                            product.copy(
+                                name = name,
+                                price = price,
+                                region = region,
+                                description = description,
+                                imageUrl = imageUri?.toString() ?: product.imageUrl
+                            ),
+                            imageUri
+                        )
+                        showSheet = false
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
+                ) {
+                    Text("Save", color = MaterialTheme.colorScheme.onPrimary)
+                }
+
+                TextButton(
+                    onClick = { showSheet = false },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text("Cancel", color = MaterialTheme.colorScheme.error)
+                }
+            }
+        }
     }
 }
-
-

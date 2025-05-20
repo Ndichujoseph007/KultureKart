@@ -15,7 +15,7 @@ val TextPrimary = Color(0xFF212121)
 val TextSecondary = Color(0xFF757575)
 
 val ErrorRed = Color(0xFFF30303)
-val SuccessGreen = Color(0xFF4CAF50)
+val SuccessGreen = Color(0xFF91FF0B)
 
 
 val GoldLight1 = Color(0xFFFFD700)
