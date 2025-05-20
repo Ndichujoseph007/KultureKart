@@ -62,10 +62,6 @@ fun AddProductScreen(
         Column(
             modifier = Modifier
                 .padding(16.dp)
-//                .paint(
-//                    painter = background,
-//                    contentScale = ContentScale.Crop
-//                )
                 .verticalScroll(rememberScrollState())
         ) {
             Box(modifier = Modifier.fillMaxWidth()) {
@@ -76,8 +72,6 @@ fun AddProductScreen(
                     Icon(Icons.Filled.ArrowBack, contentDescription = "Back")
                 }
             }
-
-            Spacer(modifier = Modifier.height(20.dp))
 
             Card(
                 modifier = Modifier.fillMaxWidth(),
@@ -91,6 +85,7 @@ fun AddProductScreen(
                         style = MaterialTheme.typography.headlineMedium,
                         color = MaterialTheme.colorScheme.primary
                     )
+
 
                     OutlinedTextField(
                         value = name,
@@ -151,6 +146,11 @@ fun AddProductScreen(
                         )
                     }
                     Spacer(modifier = Modifier.height(20.dp))
+                    Text(
+                        text = "Your Craft deserve a Golden stage-Start sharing",
+                        style = MaterialTheme.typography.titleLarge,
+                        color = MaterialTheme.colorScheme.onPrimary
+                    )
 
                     if (isLoading) {
                         CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterHorizontally))

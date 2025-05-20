@@ -146,6 +146,7 @@ fun SellerHomeScreen(
                 verticalArrangement = Arrangement.spacedBy(12.dp),
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
+
                 items(sellerProducts.size) { index ->
                     val product = sellerProducts[index]
                     ProductItemCard(
@@ -212,7 +213,7 @@ fun ProductItemCard(
                 contentDescription = product.name,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(140.dp)
+                    .height(100.dp)
                     .clip(RoundedCornerShape(8.dp))
             )
 

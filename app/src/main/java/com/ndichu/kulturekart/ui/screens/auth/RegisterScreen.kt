@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -20,6 +21,7 @@ import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -42,6 +44,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -53,58 +56,6 @@ import com.ndichu.kulturekart.data.AuthViewModel
 import com.ndichu.kulturekart.navigation.ROUTE_LOGIN
 import com.ndichu.kulturekart.ui.components.SectionCard
 
-
-//@Composable
-//fun RegisterScreen(navController:NavHostController){
-//    Column(
-//        modifier = Modifier.fillMaxSize(),
-//        horizontalAlignment = Alignment.CenterHorizontally,
-//        verticalArrangement = Arrangement.Center
-//    ) {
-//
-//
-//
-//
-//
-//
-//
-//        Button(onClick = {
-//            authViewModel.signup(name, email, password,confpassword)
-//
-//        },
-//            colors = ButtonDefaults.buttonColors(
-//                containerColor = MaterialTheme.colorScheme.primary,
-//                contentColor = MaterialTheme.colorScheme.onPrimary
-//            ),
-//            modifier = Modifier
-//                .fillMaxWidth()
-//                .padding(start = 20.dp, end = 20.dp),
-//            shape = RoundedCornerShape(5.dp)) {
-//            Text(text = "Register")
-//        }
-//
-//        Spacer(modifier = Modifier.height(10.dp))
-//
-//        Button(onClick = {
-//            navController.navigate(ROUTE_LOGIN)
-//        },
-//            colors = ButtonDefaults.buttonColors(
-//                containerColor = MaterialTheme.colorScheme.primary,
-//                contentColor = MaterialTheme.colorScheme.onPrimary
-//            ),
-//            modifier = Modifier
-//                .fillMaxWidth()
-//                .padding(start = 20.dp, end = 20.dp),
-//            shape = RoundedCornerShape(5.dp)) {
-//            Text(text = "Login")
-//        }
-//
-//    }
-//}
-//@Preview(showBackground = true)
-//@Composable
-//RegisterScreenP
-
 @Composable
 fun RegisterScreen(navController: NavHostController) {
     val viewModel: AuthViewModel = viewModel()
@@ -114,6 +65,9 @@ fun RegisterScreen(navController: NavHostController) {
     var confpassword by remember { mutableStateOf("") }
     var role by remember { mutableStateOf("buyer") }
     var error by remember { mutableStateOf("") }
+    var showPassword by remember { mutableStateOf(false) }
+    var showConfPassword by remember { mutableStateOf(false) }
+    var isLoading by remember { mutableStateOf(false) }
 
     Box(
         modifier = Modifier.fillMaxSize(),
@@ -132,7 +86,14 @@ fun RegisterScreen(navController: NavHostController) {
                 .fillMaxWidth()
         ) {
             SectionCard(title = "Create An Account!", MaterialTheme.colorScheme.primary) {
-                Spacer(modifier = Modifier.height(30.dp))
+                Spacer(modifier = Modifier.height(12.dp))
+
+                Text(
+                    "Join the golden bridge between makers and explorers.Only at KultureKart.",
+                    style = MaterialTheme.typography.bodyMedium
+                )
+
+                Spacer(modifier = Modifier.height(32.dp))
 
                 OutlinedTextField(
                     value = name,
@@ -182,7 +143,7 @@ fun RegisterScreen(navController: NavHostController) {
                             tint = MaterialTheme.colorScheme.primary
                         )
                     },
-                    visualTransformation = PasswordVisualTransformation(),
+                    visualTransformation =if (showPassword) VisualTransformation.None else PasswordVisualTransformation(),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(8.dp),
@@ -202,7 +163,7 @@ fun RegisterScreen(navController: NavHostController) {
                             tint = MaterialTheme.colorScheme.primary
                         )
                     },
-                    visualTransformation = PasswordVisualTransformation(),
+                    visualTransformation = if (showConfPassword) VisualTransformation.None else PasswordVisualTransformation(),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(8.dp),
@@ -236,7 +197,15 @@ fun RegisterScreen(navController: NavHostController) {
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(8.dp)
                 ) {
-                    Text("Register")
+                    if (isLoading) {
+                        CircularProgressIndicator(
+                            color = MaterialTheme.colorScheme.onPrimary,
+                            strokeWidth = 2.dp,
+                            modifier = Modifier.size(24.dp)
+                        )
+                    } else {
+                        Text("Register", fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
+                    }
                 }
 
                 Spacer(modifier = Modifier.height(8.dp))

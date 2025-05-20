@@ -10,6 +10,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
@@ -19,6 +20,7 @@ import androidx.compose.ui.draw.paint
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
@@ -39,7 +41,7 @@ fun SplashScreen(navController: NavController) {
     val loginStateAndRole by viewModel.loginStateAndRole.collectAsStateWithLifecycle()
 
     LaunchedEffect(key1 = true) {
-        delay(1500) // Increased delay slightly
+        delay(1000) // Increased delay slightly
         visible = false // Fade out the splash screen
 
         // Delay navigation slightly after fade out
@@ -73,6 +75,15 @@ fun SplashScreen(navController: NavController) {
             enter = fadeIn(animationSpec = tween(durationMillis = 1000)),
             exit = fadeOut(animationSpec = tween(durationMillis = 1000))
         ) {
+
+
+
+
+            // Loading Spinner
+            CircularProgressIndicator(
+                color = MaterialTheme.colorScheme.primary,
+                strokeWidth = 3.dp
+            )
 
         }
     }

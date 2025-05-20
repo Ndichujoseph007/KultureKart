@@ -99,7 +99,7 @@ fun ProfileScreen(navController: NavHostController) {
                 )
                 Spacer(Modifier.width(4.dp))
                 Text(
-                    text = "Buyer",
+                    text = "Want to buy?",
                     style = MaterialTheme.typography.bodyLarge
                 )
 
@@ -114,7 +114,7 @@ fun ProfileScreen(navController: NavHostController) {
                 )
                 Spacer(Modifier.width(4.dp))
                 Text(
-                    text = "Seller",
+                    text = "Want to sell?",
                     style = MaterialTheme.typography.bodyLarge
                 )
             }

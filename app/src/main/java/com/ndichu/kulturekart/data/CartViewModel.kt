@@ -15,6 +15,7 @@ import androidx.compose.runtime.State
 class CartViewModel : ViewModel() {
     private val dbRef = FirebaseDatabase.getInstance().getReference("carts")
     private val auth = FirebaseAuth.getInstance()
+    private val db = FirebaseDatabase.getInstance()
 
     private val _cartItems = mutableStateOf<List<CartItem>>(emptyList())
     val cartItems: State<List<CartItem>> = _cartItems
@@ -54,18 +55,48 @@ class CartViewModel : ViewModel() {
         dbRef.child(uid).child(cartItemId).setValue(item)
     }
 
-    fun updateQuantity(cartItemId: String, newQuantity: Int) {
-        val uid = auth.currentUser?.uid ?: return
-        dbRef.child(uid).child(cartItemId).child("quantity").setValue(newQuantity)
-    }
-
     fun removeFromCart(cartItemId: String) {
         val uid = auth.currentUser?.uid ?: return
         dbRef.child(uid).child(cartItemId).removeValue()
     }
 
-    fun clearCart() {
+
+    fun checkout(onSuccess: () -> Unit) {
         val uid = auth.currentUser?.uid ?: return
-        dbRef.child(uid).removeValue()
+        dbRef.child(uid).removeValue().addOnSuccessListener {
+            onSuccess()
+        }
     }
+
+
+
+
+
+
+    fun incrementQuantity(productId: String) {
+        val updatedCart = _cartItems.value.map {
+            if (it.id == productId) it.copy(quantity = it.quantity + 1) else it
+        }
+        _cartItems.value = updatedCart
+        updateCartInFirebase(updatedCart)
+    }
+
+    fun decrementQuantity(productId: String) {
+        val updatedCart = _cartItems.value.mapNotNull {
+            if (it.id == productId) {
+                if (it.quantity > 1) it.copy(quantity = it.quantity - 1) else null // remove if quantity 1 and user clicks -
+            } else it
+        }
+        _cartItems.value = updatedCart
+        updateCartInFirebase(updatedCart)
+    }
+
+    // Optional - Update Firebase when quantity changes
+    private fun updateCartInFirebase(cart: List<CartItem>) {
+        val userId = auth.currentUser?.uid ?: return
+        val cartRef = db.reference.child("carts").child(userId)
+
+        cartRef.setValue(cart.associateBy { it.id })
+    }
+
 }

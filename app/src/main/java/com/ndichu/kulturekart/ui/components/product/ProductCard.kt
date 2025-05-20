@@ -23,16 +23,20 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import com.ndichu.kulturekart.model.Product
 import coil.compose.AsyncImage
 import coil.compose.rememberAsyncImagePainter
 import com.ndichu.kulturekart.data.CartViewModel
+import com.ndichu.kulturekart.navigation.ROUTE_CART
 
 
 @Composable
 fun ProductCard(
+    navController: NavController,
     product: Product,
     onClick: () -> Unit,
+
 ) {
     Card(
         onClick = onClick,
@@ -61,7 +65,10 @@ fun ProductCard(
 
             val viewModel: CartViewModel = viewModel()
             Button(
-                onClick = { viewModel.addToCart(product) }
+                onClick = {
+                    viewModel.addToCart(product)
+                    navController.navigate(ROUTE_CART)
+                }
             ) {
                 Icon(
                     imageVector = Icons.Filled.ShoppingCart,
