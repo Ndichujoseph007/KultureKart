@@ -1,5 +1,6 @@
 package com.ndichu.kulturekart.ui.components.product
 
+import android.content.Context
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -21,11 +22,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.ndichu.kulturekart.model.Product
-import coil.compose.AsyncImage
 import coil.compose.rememberAsyncImagePainter
 import com.ndichu.kulturekart.data.CartViewModel
 import com.ndichu.kulturekart.navigation.ROUTE_CART
@@ -38,6 +39,8 @@ fun ProductCard(
     onClick: () -> Unit,
 
 ) {
+
+    val context = LocalContext.current
     Card(
         onClick = onClick,
         modifier = Modifier
@@ -52,9 +55,18 @@ fun ProductCard(
                     .padding(end = 16.dp)
             )
             Column {
-                Text(text = "Name:${product.name}",style = MaterialTheme.typography.titleMedium)
-                Text(text = "Price: $${product.price}", style = MaterialTheme.typography.bodyMedium)
-                Text(text = "Region: ${product.region}", style = MaterialTheme.typography.bodySmall)
+                Text(
+                    text = "Name:${product.name}"
+                    ,style = MaterialTheme.typography.titleMedium
+                )
+                Text(
+                    text = "Price: $${product.price}",
+                    style = MaterialTheme.typography.bodyMedium
+                )
+                Text(
+                    text = "Region: ${product.region}",
+                    style = MaterialTheme.typography.bodySmall
+                )
                 Text(
                     text = "Description: ${product.description}",
                     style = MaterialTheme.typography.bodySmall
@@ -66,7 +78,7 @@ fun ProductCard(
             val viewModel: CartViewModel = viewModel()
             Button(
                 onClick = {
-                    viewModel.addToCart(product)
+                    viewModel.addToCart(product,context=context)
                     navController.navigate(ROUTE_CART)
                 }
             ) {

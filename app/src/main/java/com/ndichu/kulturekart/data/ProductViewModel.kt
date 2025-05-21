@@ -5,7 +5,6 @@ import android.content.Context
 import android.net.Uri
 import android.util.Log
 import android.widget.Toast
-import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
@@ -16,16 +15,15 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.storage.FirebaseStorage
 import com.ndichu.kulturekart.model.Product
-import com.ndichu.kulturekart.navigation.ROUTE_PRODUCT_LIST
 import com.ndichu.kulturekart.navigation.ROUTE_SELLER_HOME
 import com.ndichu.kulturekart.network.ImgurService
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.channels.awaitClose
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.callbackFlow
-import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -190,8 +188,6 @@ override fun onDataChange(snapshot: DataSnapshot) {
 
 
 
-
-    ////////today
     private val _sellerProducts = MutableStateFlow<List<Product>>(emptyList())
     val sellerProducts: StateFlow<List<Product>> = _sellerProducts
 
@@ -435,5 +431,27 @@ override fun onDataChange(snapshot: DataSnapshot) {
         cartRef.setValue(product)
     }
 
-}
+
+
+    private val _searchText = MutableStateFlow("")
+    val searchText: StateFlow<String> = _searchText.asStateFlow()
+
+    private val _selectedFilter = MutableStateFlow("All Products")
+    val selectedFilter: StateFlow<String> = _selectedFilter.asStateFlow()
+
+    // Inside ProductViewModel.kt
+    fun updateSearchText(text: String) {
+        _searchText.value = text
+        // Trigger product filtering/loading here or combine with other flows
+    }
+
+    fun updateSelectedFilter(filter: String) {
+        _selectedFilter.value = filter
+        // Trigger product filtering/loading here or combine with other flows
+    }
+
+
+    // Inside ProductViewModel.kt
+// Assuming you have a _allSellerProducts that holds the unfiltered data
+    private val loadSellerProducts = MutableStateFlow<List<Product>>(emptyList())}
 
