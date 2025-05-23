@@ -84,39 +84,6 @@ fun DashboardScreen(
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.primary
                 ),
-                actions = {
-                    // Search Icon (can open a search dialog or just be a visual cue for the field below)
-                    IconButton(onClick = { /* Could expand search bar or navigate to dedicated search screen */ }) {
-                        Icon(
-                            Icons.Default.Search,
-                            contentDescription = "Search",
-                            tint = MaterialTheme.colorScheme.onPrimary
-                        )
-                    }
-                    // Shopping Cart Icon with Badge
-                    BadgedBox(
-                        badge = {
-                            // Replace with actual cart item count from your ViewModel
-                            val cartItemCount = 3 // Example: viewModel.cartItemCount.collectAsState().value
-                            if (cartItemCount > 0) {
-                                Badge(
-                                    containerColor = MaterialTheme.colorScheme.error,
-                                    contentColor = MaterialTheme.colorScheme.onError
-                                ) {
-                                    Text(cartItemCount.toString())
-                                }
-                            }
-                        }
-                    ) {
-                        IconButton(onClick = { navController.navigate(ROUTE_CART) }) {
-                            Icon(
-                                Icons.Default.ShoppingCart,
-                                contentDescription = "Shopping Cart",
-                                tint = MaterialTheme.colorScheme.onPrimary
-                            )
-                        }
-                    }
-                },
                 scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
             )
         },
@@ -188,14 +155,20 @@ fun DashboardScreen(
                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
             )
 
-            // Search Bar
             OutlinedTextField(
                 value = searchQuery,
                 onValueChange = { searchQuery = it },
                 label = { Text("Search products by name, description, or region") },
-                leadingIcon = { Icon(Icons.Default.Search, contentDescription = "Search") },
+                leadingIcon = {
+                    Icon(
+                        Icons.Default.Search,
+                        contentDescription = "Search products"
+                    )
+                },
                 modifier = Modifier
-                    .fillMaxWidth(),
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 8.dp),
+                singleLine = true,
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedBorderColor = MaterialTheme.colorScheme.primary,
                     unfocusedBorderColor = MaterialTheme.colorScheme.outline,
@@ -328,7 +301,7 @@ fun BuyerProductCard(
     Card(
         modifier = modifier
             .fillMaxWidth()
-            .height(260.dp) ,// Make card clickable for details
+            .height(350.dp) ,// Make card clickable for details
         shape = RoundedCornerShape(12.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface) // Card background
@@ -367,6 +340,15 @@ fun BuyerProductCard(
                 color = MaterialTheme.colorScheme.secondary // Golden accent for price
             )
 
+
+
+            Text(
+                text = "Description: ${product.description}",
+                style = MaterialTheme.typography.bodyMedium,
+                maxLines = 4,
+                color = MaterialTheme.colorScheme.onSurfaceVariant // Golden text on surface variant
+            )
+
             // Stock Status Chip (styled like your previous filters)
             val isOutOfStock = (product.price) <= 0.toString()
             FilterChip(
@@ -399,6 +381,9 @@ fun BuyerProductCard(
                 Spacer(Modifier.width(8.dp))
                 Text(if (isOutOfStock) "Out of Stock" else "Add to Cart")
             }
+
+
+
         }
     }
 }

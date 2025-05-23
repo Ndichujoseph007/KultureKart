@@ -1,18 +1,14 @@
 package com.ndichu.kulturekart.navigation
 
+import CartScreen
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.lifecycle.ViewModel
 import androidx.navigation.NavHostController
-import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.navArgument
-import com.ndichu.kulturekart.data.ProductViewModel
 import com.ndichu.kulturekart.ui.components.ScaffoldWithBottomBar
 import com.ndichu.kulturekart.ui.screens.auth.LoginScreen
 import com.ndichu.kulturekart.ui.screens.auth.RegisterScreen
-import com.ndichu.kulturekart.ui.screens.buyer.CartScreen
 import com.ndichu.kulturekart.ui.screens.buyer.DashboardScreen
 import com.ndichu.kulturekart.ui.screens.profile.AboutScreen
 import com.ndichu.kulturekart.ui.screens.profile.ProfileScreen
